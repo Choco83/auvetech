@@ -102,11 +102,14 @@ class DetectorManager():
             self.light_size_topic, Vector3, queue_size=10)
         self.light_detection_pub = rospy.Publisher(
             self.light_detection_topic, Bool, queue_size=10)
+        self.image_pub = rospy.Publisher(
+            'test_image', Image, queue_size=10)
 
         rospy.loginfo("Launched node for object detection")
 
         if(self.play_video):
             self.video_location = rospy.get_param('~video_loc', '')
+            self.rate_in_sec = rospy.get_param('~processing_rate', 1.0)
             rospy.timer(rospy.Duration(10), self.getVideo(
                 self.video_location), True)
 
@@ -173,10 +176,11 @@ class DetectorManager():
         # while rval:
         while rval:
             rval, frame = cap.read()
-            # image_message = self.bridge.cv2_to_imgmsg(
-            #     frame, encoding="passthrough")
+            image_message = self.bridge.cv2_to_imgmsg(
+                frame, encoding="passthrough")
+            self.image_pub.publish(image_message)
             self.detection(frame)
-            rospy.sleep(1)
+            rospy.sleep(self.rate_in_sec)
 
         cap.release()
         print("Processing video completed")

@@ -8,6 +8,7 @@
 
     <!-- Published topics -->
     <arg name="publish_image"	            default="true" doc="whether to play a video or not"/>
+    <arg name="processing_rate"             default="1.0" doc="time in seconds to wait to fetch next frame in video"/>
     <arg name="detections_image_topic"      default="detections_image_topic"/>
     <arg name="light_size_topic"            default="traffic_light_size"/>
     <arg name="light_detection_topic"       default="traffic_light_detected"/>
@@ -32,6 +33,7 @@
         <param name="video_loc"                 value="$(arg video_loc)"/>
         <param name="light_size_topic"          value="$(arg light_size_topic)"/>
         <param name="light_detection_topic"     value="$(arg light_detection_topic)"/>
+        <param name="processing_rate"           value="$(arg processing_rate)"/>
     </node>
 
     <node pkg="yolov3_pytorch_ros" type="traffic_light_analysis.py" name="traffic_light_analysis">
