@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch>
+    <!-- Camera topic and weights, config and classes files -->
+    <arg name="image_topic"	                default="/arm_sensor/camera/image_raw"/>
+    <arg name="weights_name"	            default="yolov3.weights"/>
+    <arg name="config_name"	                default="yolov3.cfg"/>
+    <arg name="classes_name"	            default="coco.names"/>
+
+    <!-- Published topics -->
+    <arg name="publish_image"	            default="true" doc="whether to play a video or not"/>
+    <arg name="detections_image_topic"      default="detections_image_topic"/>
+    <arg name="light_size_topic"            default="traffic_light_size"/>
+    <arg name="light_detection_topic"       default="traffic_light_detected"/>
+
+    <!-- Detection confidence -->
+    <arg name="confidence"                  default="0.6"/>
+
+    <!-- Play video -->
+    <arg name="play_video"                  default="true"/>
+    <arg name="video_loc"                   default="$(find yolov3_pytorch_ros)/video/traff.mp4"/>
+
+    <!-- Node -->
+    <node name="traffic_light_fetcher" pkg="yolov3_pytorch_ros" type="detector.py" output="screen">
+        <param name="play_video"                value="$(arg play_video)"/>
+        <param name="image_topic"               value="$(arg image_topic)"/>
+        <param name="weights_name"              value="$(arg weights_name)"/>
+        <param name="config_name"               value="$(arg config_name)"/>
+        <param name="classes_name"              value="$(arg classes_name)"/>
+        <param name="publish_image"             value="$(arg publish_image)"/>
+        <param name="detections_image_topic"    value="$(arg detections_image_topic)"/>
+        <param name="confidence"                value="$(arg confidence)"/>
+        <param name="video_loc"                 value="$(arg video_loc)"/>
+        <param name="light_size_topic"          value="$(arg light_size_topic)"/>
+        <param name="light_detection_topic"     value="$(arg light_detection_topic)"/>
+    </node>
+
+    <node pkg="yolov3_pytorch_ros" type="traffic_light_analysis.py" name="traffic_light_analysis">
+        <remap from="analysis_topic"            to="zone_height"/>
+        <remap from="detection_topic"           to="$(arg light_detection_topic)"/>
+        <remap from="size_topic"                to="$(arg light_size_topic)"/>
+    </node>
+</launch>
